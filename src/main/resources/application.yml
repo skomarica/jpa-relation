@@ -1,0 +1,5 @@
+liquibase.change-log: classpath:changelog.xml
+
+spring.jpa.hibernate.ddl-auto: none
+
+logging.level.io.github.skomarica: DEBUG

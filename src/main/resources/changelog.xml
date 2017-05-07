@@ -1,0 +1,126 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="sinisa.komarica@united.cloud" id="ddl-1.0.0">
+
+        <createTable tableName="ac_role">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="pk_ac_role"/>
+            </column>
+            <column name="name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="ac_role_attribute">
+            <column name="ac_role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ac_attribute_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="ac_attribute">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="pk_ac_attribute"/>
+            </column>
+            <column name="name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="ac_role_permission">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="pk_ac_role_permission"/>
+            </column>
+            <column name="ac_role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ac_permission_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="is_denied" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="ac_permission">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="pk_ac_permission"/>
+            </column>
+            <column name="name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="ac_role_id, ac_attribute_id"
+                       constraintName="pk_ac_role_attribute" tableName="ac_role_attribute"/>
+
+        <addUniqueConstraint columnNames="name" constraintName="uq_ac_role_name"
+                             tableName="ac_role"/>
+
+        <addUniqueConstraint columnNames="ac_role_id, ac_permission_id" constraintName="uq_ac_role_permission"
+                             tableName="ac_role_permission"/>
+
+        <addUniqueConstraint columnNames="name" constraintName="uq_ac_attribute_name"
+                             tableName="ac_attribute"/>
+
+        <addUniqueConstraint columnNames="name" constraintName="uq_ac_permission_name"
+                             tableName="ac_permission"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="ac_role_id" baseTableName="ac_role_attribute"
+                                 constraintName="fk_ac_role_attribute_role_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="ac_role"/>
+
+        <addForeignKeyConstraint baseColumnNames="ac_attribute_id" baseTableName="ac_role_attribute"
+                                 constraintName="fk_ac_role_attribute_attribute_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="ac_attribute"/>
+
+        <addForeignKeyConstraint baseColumnNames="ac_role_id" baseTableName="ac_role_permission"
+                                 constraintName="fk_ac_role_permission_role_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="ac_role"/>
+
+        <addForeignKeyConstraint baseColumnNames="ac_permission_id" baseTableName="ac_role_permission"
+                                 constraintName="fk_ac_role_permission_permission_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="ac_permission"/>
+
+
+    </changeSet>
+
+    <changeSet author="sinisa.komarica@united.cloud" id="ddl-1.0.1">
+        <sql>
+            INSERT INTO ac_role (id, name) VALUES
+            (1, 'ADMIN');
+
+            INSERT INTO ac_attribute (id, name) VALUES
+            (1, 'Important'),
+            (2, 'VIP'),
+            (3, 'Newbie'),
+            (4, 'Senior');
+
+            INSERT INTO ac_permission (id, name) VALUES
+            (1, 'PERM_OBJECT1_READ'),
+            (2, 'PERM_OBJECT1_WRITE'),
+            (3, 'PERM_OBJECT2_READ'),
+            (4, 'PERM_OBJECT2_WRITE');
+
+            INSERT INTO ac_role_attribute (ac_role_id, ac_attribute_id) VALUES
+            (1, 1),
+            (1, 2);
+
+            INSERT INTO ac_role_permission (ac_role_id, ac_permission_id, is_denied) VALUES
+            (1, 1, false),
+            (1, 2, false);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
